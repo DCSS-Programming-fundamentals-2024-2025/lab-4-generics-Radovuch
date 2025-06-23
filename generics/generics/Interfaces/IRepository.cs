@@ -1,58 +1,24 @@
-﻿namespace generics.Interfaces
+using System.Collections.Generic;
+
+namespace generics.Entity
 {
-
-interface IRepository<TEntity, TKey>
-    where TEntity : class, new()
-    where TKey : struct
-{
-    void Add(TKey id, TEntity entity);
-    TEntity Get(TKey id);
-    IEnumerable<TEntity> GetAll();
-    void Remove(TKey id);
-}
-
-interface IReadOnlyRepository<out TEntity, in TKey>
-{
-    TEntity Get(TKey id);
-    IEnumerable<TEntity> GetAll();
-}
-
-
-class InMemoryRepository<TEntity, TKey> : IRepository<TEntity, TKey>, IReadOnlyRepository<TEntity, TKey>
-    where TEntity : class, new()
-    where TKey : struct
-{
-    private Dictionary<TKey, TEntity> _storage = new Dictionary<TKey, TEntity>();
-
-    public void Add(TKey id, TEntity entity)
+    public interface IRepository<TEntity, TKey>
+        where TEntity : class, new()
+        where TKey : struct
     {
-        if (_storage.ContainsKey(id))
-        {
-            _storage[id] = entity;
-        }
-        else
-        {
-            _storage.Add(id, entity);
-        }
+        void Add(TKey id, TEntity entity);
+        TEntity Get(TKey id);
+        IEnumerable<TEntity> GetAll();
+        void Remove(TKey id);
     }
-
-    public TEntity Get(TKey id)
+    public interface IReadOnlyRepository<out TEntity, in TKey>
     {
-        if (_storage.TryGetValue(id, out TEntity entity))
-        {
-            return entity;
-        }
-        return null;
+        TEntity Get(TKey id);
+        IEnumerable<TEntity> GetAll();
     }
-
-    public IEnumerable<TEntity> GetAll()
+    public interface IWriteRepository<in TEntity, in TKey>
     {
-        return _storage.Values;
+        void Add(TEntity entity);
+        void Remove(TKey id);
     }
-
-    public void Remove(TKey id)
-    {
-        _storage.Remove(id);
-    }
-
 }
